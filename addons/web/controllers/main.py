@@ -41,6 +41,10 @@ openerpweb = http
 # OpenERP Web helpers
 #----------------------------------------------------------
 
+
+logger = logging.getLogger(__name__)
+
+
 def rjsmin(script):
     """ Minify js with a clever regex.
     Taken from http://opensource.perlig.de/rjsmin
@@ -1046,9 +1050,34 @@ class Menu(openerpweb.Controller):
 class DataSet(openerpweb.Controller):
     _cp_path = "/web/dataset"
 
+    def _preprocess_domain(self, domain):
+        """ Preprocess the domain to trim whitespace and newline characters from the strings
+        """
+        try:
+            for i, group in enumerate(domain):
+
+                def fix_string(search):
+                    return search.encode('utf-8').replace('\xc2\xa0', ' ').strip()
+
+                if group == '|':  # Domains use Polish notation so the ORs appear at the beginning
+                    continue
+                elif isinstance(group[2], unicode):
+                    trimmed = fix_string(group[2])
+                elif isinstance(group[2], list):
+                    trimmed = [fix_string(piece) for piece in group[2]]
+                else:
+                    trimmed = group[2]
+
+                domain[i] = [group[0], group[1], trimmed]
+
+        except Exception:
+            logger.exception("Error occurred attempting to trim search string")
+
     @openerpweb.jsonrequest
     def search_read(self, req, model, fields=False, offset=0, limit=False, domain=None, sort=None):
+        self._preprocess_domain(domain)
         return self.do_search_read(req, model, fields, offset, limit, domain, sort)
+
     def do_search_read(self, req, model, fields=False, offset=0, limit=False, domain=None
                        , sort=None):
         """ Performs a search() followed by a read() (if needed) using the
