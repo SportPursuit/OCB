@@ -112,7 +112,7 @@ class stock_picking(osv.osv):
             purchase_line_obj = self.pool.get('purchase.order.line') 
             purchase_line_obj.write(cursor, user, [move_line.purchase_line_id.id], {
                 'invoice_lines': [(4, invoice_line_id)],
-            })
+            }, context={'force_no_store_function': True})
         return super(stock_picking, self)._invoice_line_hook(cursor, user, move_line, invoice_line_id)
 
     def _invoice_hook(self, cursor, user, picking, invoice_id):

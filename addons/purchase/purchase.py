@@ -35,6 +35,13 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FO
 
 class purchase_order(osv.osv):
 
+    def _store_set_values(self, cr, uid, ids, fields, context):
+        if context is None:
+            context = {}
+        if context.get('force_no_store_function', False):
+            return True
+        return super(purchase_order, self)._store_set_values(cr, uid, ids, fields, context)
+
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         cur_obj=self.pool.get('res.currency')
