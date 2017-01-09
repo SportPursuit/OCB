@@ -1658,6 +1658,7 @@ class ExportFormat(object):
                      ('Content-Type', self.content_type)],
             cookies={'fileToken': token})
 
+
 class CSVExport(ExportFormat, http.Controller):
     _cp_path = '/web/export/csv'
     fmt = {'tag': 'csv', 'label': 'CSV'}
@@ -1669,29 +1670,72 @@ class CSVExport(ExportFormat, http.Controller):
     def filename(self, base):
         return base + '.csv'
 
-    def from_data(self, fields, rows):
+    @openerpweb.httprequest
+    def index(self, req, data, token):
+        items = ('model', 'fields', 'ids', 'domain', 'import_compat')
+        model, fields, ids, domain, import_compat = operator.itemgetter(items)(simplejson.loads(data))
+
+        Model = req.session.model(model)
+        ids = ids or Model.search(domain, 0, False, False, req.context)
+        field_names = map(operator.itemgetter('name'), fields)
+
+        # This is modified code from the ExportFormat class to support creating csv files in chunks that will be
+        # streamed to the browser instead of building the whole thing in memory and sending in one go.
+        # This is to combat memory leaks that end up bringing down our frontend every so often.
+
+        CHUNK_SIZE = 1000
+
+        def data_func():
+            count, remaining = divmod(len(ids), CHUNK_SIZE)
+            count += 1 if remaining > 0 else 0
+
+            for i in range(count):
+                start = CHUNK_SIZE * i
+                chunk = ids[start:start + CHUNK_SIZE]
+                yield Model.export_data(chunk, field_names, req.context).get('datas',[])
+
+        chunks = data_func()
+
+        if import_compat:
+            columns_headers = field_names
+        else:
+            columns_headers = [val['label'].strip() for val in fields]
+
+        return req.make_response(self.from_data(columns_headers, chunks),
+            headers=[('Content-Disposition',
+                            content_disposition(self.filename(model), req)),
+                     ('Content-Type', self.content_type)],
+            cookies={'fileToken': token})
+
+    def from_data(self, fields, chunks):
         fp = StringIO()
         writer = csv.writer(fp, quoting=csv.QUOTE_ALL)
 
         writer.writerow([name.encode('utf-8') for name in fields])
 
-        for data in rows:
-            row = []
-            for d in data:
-                if isinstance(d, basestring):
-                    d = d.replace('\n',' ').replace('\t',' ')
-                    try:
-                        d = d.encode('utf-8')
-                    except UnicodeError:
-                        pass
-                if d is False: d = None
-                row.append(d)
-            writer.writerow(row)
+        for chunk in chunks:
+            for data in chunk:
+                row = []
+                for d in data:
+                    if isinstance(d, basestring):
+                        d = d.replace('\n',' ').replace('\t',' ')
+                        try:
+                            d = d.encode('utf-8')
+                        except UnicodeError:
+                            pass
+                    if d is False: d = None
+                    row.append(d)
+                writer.writerow(row)
 
-        fp.seek(0)
-        data = fp.read()
+            fp.seek(0)
+            data = fp.read()
+            yield data
+            fp.seek(0)
+            fp.truncate()
+
         fp.close()
-        return data
+        return
+
 
 class ExcelExport(ExportFormat, http.Controller):
     _cp_path = '/web/export/xls'
