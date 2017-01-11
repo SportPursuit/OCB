@@ -1670,8 +1670,8 @@ class CSVExport(ExportFormat, http.Controller):
 
     @openerpweb.httprequest
     def index(self, req, data, token):
-        items = ('model', 'fields', 'ids', 'domain', 'import_compat')
-        model, fields, ids, domain, import_compat = operator.itemgetter(items)(simplejson.loads(data))
+        data = operator.itemgetter('model', 'fields', 'ids', 'domain', 'import_compat')(simplejson.loads(data))
+        model, fields, ids, domain, import_compat = data
 
         Model = req.session.model(model)
         ids = ids or Model.search(domain, 0, False, False, req.context)
