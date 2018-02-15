@@ -80,7 +80,7 @@ regex_order = re.compile('^( *([a-z0-9_]+|"[a-z0-9_]+")( *desc| *asc)?( *, *|))+
 regex_object_name = re.compile(r'^[a-z0-9_.]+$')
 
 # TODO for trunk, raise the value to 1000
-AUTOINIT_RECALCULATE_STORED_FIELDS = 40
+AUTOINIT_RECALCULATE_STORED_FIELDS = 1000
 
 def transfer_field_to_modifiers(field, modifiers):
     default_values = {}
@@ -2870,10 +2870,13 @@ class BaseModel(object):
         _logger.info("storing computed values of fields.function '%s'", k)
         ss = self._columns[k]._symbol_set
         update_query = 'UPDATE "%s" SET "%s"=%s WHERE id=%%s' % (self._table, k, ss[0])
-        cr.execute('select id from '+self._table)
+        cr.execute('select id from ' + self._table)
         ids_lst = map(lambda x: x[0], cr.fetchall())
+        total = len(ids_lst)
+        count = 0
         while ids_lst:
             iids = ids_lst[:AUTOINIT_RECALCULATE_STORED_FIELDS]
+            count += len(iids)
             ids_lst = ids_lst[AUTOINIT_RECALCULATE_STORED_FIELDS:]
             res = f.get(cr, self, iids, k, SUPERUSER_ID, {})
             for key, val in res.items():
@@ -2884,6 +2887,8 @@ class BaseModel(object):
                     val = val[0]
                 if val is not False:
                     cr.execute(update_query, (ss[1](val), key))
+
+            _logger.info("stored computed values of fields.function '%s' - %s/%s", k, count, total)
 
     def _check_selection_field_value(self, cr, uid, field, value, context=None):
         """Raise except_orm if value is not among the valid values for the selection field"""
