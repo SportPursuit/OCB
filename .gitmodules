@@ -62,3 +62,11 @@
 	path = vendor/product-attribute
 	url = https://github.com/OCA/product-attribute.git
 	branch = 7.0
+[submodule "vendor/sportpursuit-odoo-modules"]
+	path = vendor/sportpursuit-odoo-modules
+	url = https://github.com/SportPursuit/sportpursuit-odoo-modules.git
+	branch = master
+[submodule "vendor/sp-odoo"]
+	path = vendor/sp-odoo
+	url = https://github.com/SportPursuit/odoo.git
+	branch = master
