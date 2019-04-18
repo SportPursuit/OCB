@@ -1,0 +1,64 @@
+[submodule "vendor/credativ-addons"]
+	path = vendor/credativ-addons
+	url = https://github.com/SportPursuit/credativ-addons
+	branch = addons-7.0
+[submodule "vendor/wms"]
+	path = vendor/wms
+	url = https://github.com/SportPursuit/wms
+	branch = 7.0
+[submodule "vendor/oca-web"]
+	path = vendor/oca-web
+	url = https://github.com/OCA/web.git
+	branch = 7.0
+[submodule "vendor/connector"]
+	path = vendor/connector
+	url = https://github.com/SportPursuit/connector.git
+	branch = 7.0-local
+[submodule "vendor/connector-ecommerce"]
+	path = vendor/connector-ecommerce
+	url = https://github.com/OCA/connector-ecommerce.git
+	branch = 7.0
+[submodule "vendor/connector-magento"]
+	path = vendor/connector-magento
+	url = https://github.com/SportPursuit/connector-magento.git
+	branch = 7.0-bundle-import-base
+[submodule "vendor/account-invoicing"]
+	path = vendor/account-invoicing
+	url = https://github.com/SportPursuit/account-invoicing.git
+	branch = 683-merge-draft-invoices-error
+[submodule "vendor/stock-logistics-workflow"]
+	path = vendor/stock-logistics-workflow
+	url = https://github.com/sportpursuit/stock-logistics-workflow.git
+	branch = 7.0-picking-line-sale-link
+[submodule "vendor/e-commerce"]
+	path = vendor/e-commerce
+	url = https://github.com/OCA/e-commerce.git
+	branch = 7.0
+[submodule "vendor/sale-workflow"]
+	path = vendor/sale-workflow
+	url = https://github.com/OCA/sale-workflow.git
+	branch = 7.0
+[submodule "vendor/purchase-workflow"]
+	path = vendor/purchase-workflow
+	url = https://github.com/OCA/purchase-workflow.git
+	branch = 7.0
+[submodule "vendor/account-fiscal-rule"]
+	path = vendor/account-fiscal-rule
+	url = https://github.com/credativUK/account-fiscal-rule.git
+	branch = 7.0-fiscal-rule-shop
+[submodule "vendor/server-tools"]
+	path = vendor/server-tools
+	url = https://github.com/OCA/server-tools.git
+	branch = 7.0
+[submodule "vendor/account-financial-reporting"]
+	path = vendor/account-financial-reporting
+	url = https://github.com/SportPursuit/account-financial-reporting.git
+	branch = 7.0
+[submodule "vendor/reporting-engine"]
+	path = vendor/reporting-engine
+	url = https://github.com/OCA/reporting-engine.git
+	branch = 7.0
+[submodule "vendor/product-attribute"]
+	path = vendor/product-attribute
+	url = https://github.com/OCA/product-attribute.git
+	branch = 7.0
