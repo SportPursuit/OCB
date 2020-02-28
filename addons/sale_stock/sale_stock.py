@@ -291,6 +291,9 @@ class sale_order(osv.osv):
             return canceled
 
     def _prepare_order_line_procurement(self, cr, uid, order, line, move_id, date_planned, context=None):
+        warehouse_obj = self.pool.get('stock.warehouse')
+        wid = warehouse_obj.search(cr, uid, [('id', '=', context['warehouse_id'])], context=context)[0]
+        warehouse = warehouse_obj.browse(cr, uid, wid)
         return {
             'name': line.name,
             'origin': order.name,
@@ -302,7 +305,7 @@ class sale_order(osv.osv):
                     or line.product_uom_qty,
             'product_uos': (line.product_uos and line.product_uos.id)\
                     or line.product_uom.id,
-            'location_id': order.shop_id.warehouse_id.lot_stock_id.id,
+            'location_id': warehouse.lot_stock_id.id,
             'procure_method': line.type,
             'move_id': move_id,
             'company_id': order.company_id.id,
@@ -310,8 +313,12 @@ class sale_order(osv.osv):
         }
 
     def _prepare_order_line_move(self, cr, uid, order, line, picking_id, date_planned, context=None):
-        location_id = order.shop_id.warehouse_id.lot_stock_id.id
-        output_id = order.shop_id.warehouse_id.lot_output_id.id
+        warehouse_obj = self.pool.get('stock.warehouse')
+        wid = warehouse_obj.search(cr, uid, [('id', '=', context['warehouse_id'])], context=context)[0]
+        warehouse = warehouse_obj.browse(cr, uid, wid)
+
+        location_id = warehouse.lot_stock_id.id
+        output_id = warehouse.lot_output_id.id
         return {
             'name': line.name,
             'picking_id': picking_id,
