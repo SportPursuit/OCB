@@ -350,12 +350,28 @@ class product_product(osv.osv):
             c = context.copy()
             if f == 'qty_available':
                 c.update({ 'states': ('done',), 'what': ('in', 'out') })
+            if f == 'qty_available_wrs':
+                c.update({'warehouse': 1, 'states': ('done',), 'what': ('in', 'out')})
+            if f == 'qty_available_pvs':
+                c.update({'warehouse': 6, 'states': ('done',), 'what': ('in', 'out')})
             if f == 'virtual_available':
                 c.update({ 'states': ('confirmed','waiting','assigned','done'), 'what': ('in', 'out') })
+            if f == 'virtual_available_wrs':
+                c.update({'warehouse': 1, 'states': ('confirmed','waiting','assigned','done'), 'what': ('in', 'out') })
+            if f == 'virtual_available_pvs':
+                c.update({'warehouse': 6, 'states': ('confirmed','waiting','assigned','done'), 'what': ('in', 'out') })
             if f == 'incoming_qty':
                 c.update({ 'states': ('confirmed','waiting','assigned'), 'what': ('in',) })
+            if f == 'incoming_qty_wrs':
+                c.update({'warehouse': 1, 'states': ('confirmed','waiting','assigned'), 'what': ('in',) })
+            if f == 'incoming_qty_pvs':
+                c.update({'warehouse': 6, 'states': ('confirmed','waiting','assigned'), 'what': ('in',) })
             if f == 'outgoing_qty':
                 c.update({ 'states': ('confirmed','waiting','assigned'), 'what': ('out',) })
+            if f == 'outgoing_qty_wrs':
+                c.update({'warehouse': 1, 'states': ('confirmed','waiting','assigned'), 'what': ('out',) })
+            if f == 'outgoing_qty_pvs':
+                c.update({'warehouse': 6, 'states': ('confirmed','waiting','assigned'), 'what': ('out',) })
             stock = self.get_product_available(cr, uid, ids, context=c)
             for id in ids:
                 res[id][f] = stock.get(id, 0.0)
@@ -431,6 +447,41 @@ class product_product(osv.osv):
                                         help="If real-time valuation is enabled for a product, the system will automatically write journal entries corresponding to stock moves." \
                                              "The inventory variation account set on the product category will represent the current inventory value, and the stock input and stock output account will hold the counterpart moves for incoming and outgoing products."
                                         , required=True),
+        'qty_available_wrs': fields.function(_product_available, multi='qty_available',
+                                         type='float', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                         string='Quantity On Hand At WRS',
+                                         help="Current quantity of products at WRS warehouse"),
+        'virtual_available_wrs': fields.function(_product_available, multi='qty_available',
+                                             type='float', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                             string='Forecasted Quantity At WRS',
+                                             help="Forecast quantity (computed as Quantity On Hand "
+                                                  "- Outgoing + Incoming) at WRS warehouse"),
+        'incoming_qty_wrs': fields.function(_product_available, multi='qty_available',
+                                        type='float', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                        string='Incoming At WRS',
+                                        help="Quantity of products that are planned to arrive at WRS warehouse"),
+        'outgoing_qty_wrs': fields.function(_product_available, multi='qty_available',
+                                        type='float', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                        string='Outgoing At WRS',
+                                        help="Quantity of products that are planned to leave WRS warehouse."),
+        'qty_available_pvs': fields.function(_product_available, multi='qty_available',
+                                             type='float', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                             string='Quantity On Hand At PVS',
+                                             help="Current quantity of products at PVS warehouse"),
+        'virtual_available_pvs': fields.function(_product_available, multi='qty_available',
+                                                 type='float',
+                                                 digits_compute=dp.get_precision('Product Unit of Measure'),
+                                                 string='Forecasted Quantity At PVS',
+                                                 help="Forecast quantity (computed as Quantity On Hand "
+                                                      "- Outgoing + Incoming) at PVS warehouse"),
+        'incoming_qty_pvs': fields.function(_product_available, multi='qty_available',
+                                            type='float', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                            string='Incoming At PVS',
+                                            help="Quantity of products that are planned to arrive at PVS warehouse"),
+        'outgoing_qty_pvs': fields.function(_product_available, multi='qty_available',
+                                            type='float', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                            string='Outgoing At PVS',
+                                            help="Quantity of products that are planned to leave PVS warehouse."),
     }
 
     _defaults = {

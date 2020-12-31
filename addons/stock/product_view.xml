@@ -90,13 +90,21 @@
                         <label for="qty_available"/>
                             <div>
                                 <field name="qty_available" class="oe_inline"/>
+                                <field name="qty_available_wrs" class="oe_inline"/>
+                                <field name="qty_available_pvs" class="oe_inline"/>
                                 <button name="%(action_view_change_product_quantity)d" string="update"
                                 type="action"
                                 class="oe_link"/>
                             </div>
                             <field name="incoming_qty" class="oe_inline"/>
+                            <field name="incoming_qty_wrs" class="oe_inline"/>
+                            <field name="incoming_qty_pvs" class="oe_inline"/>
                             <field name="outgoing_qty" class="oe_inline"/>
+                            <field name="outgoing_qty_wrs" class="oe_inline"/>
+                            <field name="outgoing_qty_pvs" class="oe_inline"/>
                             <field name="virtual_available" class="oe_inline"/>
+                            <field name="virtual_available_wrs" class="oe_inline"/>
+                            <field name="virtual_available_pvs" class="oe_inline"/>
                     </group>
                     <group name="lot" groups="stock.group_tracking_lot,stock.group_production_lot" string="Lots">
                         <field name="track_production" groups="stock.group_production_lot"/>
